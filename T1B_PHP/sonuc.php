@@ -2,7 +2,7 @@
 session_start();
 
 if (empty($_SESSION['form_data'])) {
-    header('Location: form.php');
+    header('Location: index.php');
     exit;
 }
 
@@ -152,7 +152,7 @@ unset($_SESSION['form_data']);
         </div>
     </div>
 
-    <a href="form.php" class="btn">Geri Dön</a>
+    <a href="index.php" class="btn">Geri Dön</a>
 </div>
 
 </body>

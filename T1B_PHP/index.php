@@ -1,24 +1,25 @@
 <?php
 session_start();
 
-function temizle($veri) {
+function temizle($veri)
+{
     return htmlspecialchars(strip_tags(trim($veri)), ENT_QUOTES, 'UTF-8');
 }
 
-$hatalar  = [];
+$hatalar = [];
 $degerler = [
-    'isim'     => '',
-    'soyisim'  => '',
-    'email'    => '',
+    'isim' => '',
+    'soyisim' => '',
+    'email' => '',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $degerler['isim']    = temizle($_POST['isim']    ?? '');
+    $degerler['isim'] = temizle($_POST['isim'] ?? '');
     $degerler['soyisim'] = temizle($_POST['soyisim'] ?? '');
-    $degerler['email']   = temizle($_POST['email']   ?? '');
-    $sifre               = $_POST['sifre'] ?? '';
-    $sifre_tekrar        = $_POST['sifre_tekrar'] ?? '';
+    $degerler['email'] = temizle($_POST['email'] ?? '');
+    $sifre = $_POST['sifre'] ?? '';
+    $sifre_tekrar = $_POST['sifre_tekrar'] ?? '';
 
     if ($degerler['isim'] === '') {
         $hatalar['isim'] = 'İsim alanı zorunludur.';
@@ -55,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,8 +89,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h1 {
@@ -133,8 +142,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             padding: 12px 15px;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             color: #fff;
             font-family: inherit;
             font-size: 14px;
@@ -145,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         input:focus {
             outline: none;
             border-color: #38bdf8;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
         }
 
@@ -190,58 +199,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Kayıt Ol</h1>
-    <p class="subtitle">Premium dünyaya adım atmak için hesabını oluştur.</p>
+    <div class="container">
+        <h1>Kayıt Ol</h1>
+        <p class="subtitle">Premium dünyaya adım atmak için hesabını oluştur.</p>
 
-    <form action="form.php" method="POST">
-        <div class="form-row">
+        <form action="index.php" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="isim">Ad</label>
+                    <input type="text" id="isim" name="isim" value="<?= $degerler['isim'] ?>"
+                        class="<?= isset($hatalar['isim']) ? 'hatali' : '' ?>" placeholder="Adınız">
+                    <?php if (isset($hatalar['isim'])): ?>
+                        <div class="hata-mesaji">&#9888; <?= $hatalar['isim'] ?></div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group">
+                    <label for="soyisim">Soyad</label>
+                    <input type="text" id="soyisim" name="soyisim" value="<?= $degerler['soyisim'] ?>"
+                        class="<?= isset($hatalar['soyisim']) ? 'hatali' : '' ?>" placeholder="Soyadınız">
+                    <?php if (isset($hatalar['soyisim'])): ?>
+                        <div class="hata-mesaji">&#9888; <?= $hatalar['soyisim'] ?></div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
             <div class="form-group">
-                <label for="isim">Ad</label>
-                <input type="text" id="isim" name="isim" value="<?= $degerler['isim'] ?>" class="<?= isset($hatalar['isim']) ? 'hatali' : '' ?>" placeholder="Adınız">
-                <?php if (isset($hatalar['isim'])): ?>
-                    <div class="hata-mesaji">&#9888; <?= $hatalar['isim'] ?></div>
+                <label for="email">E-posta Adresi</label>
+                <input type="text" id="email" name="email" value="<?= $degerler['email'] ?>"
+                    class="<?= isset($hatalar['email']) ? 'hatali' : '' ?>" placeholder="ornek@mail.com">
+                <?php if (isset($hatalar['email'])): ?>
+                    <div class="hata-mesaji">&#9888; <?= $hatalar['email'] ?></div>
                 <?php endif; ?>
             </div>
 
             <div class="form-group">
-                <label for="soyisim">Soyad</label>
-                <input type="text" id="soyisim" name="soyisim" value="<?= $degerler['soyisim'] ?>" class="<?= isset($hatalar['soyisim']) ? 'hatali' : '' ?>" placeholder="Soyadınız">
-                <?php if (isset($hatalar['soyisim'])): ?>
-                    <div class="hata-mesaji">&#9888; <?= $hatalar['soyisim'] ?></div>
+                <label for="sifre">Şifre</label>
+                <input type="password" id="sifre" name="sifre" class="<?= isset($hatalar['sifre']) ? 'hatali' : '' ?>"
+                    placeholder="••••••••">
+                <?php if (isset($hatalar['sifre'])): ?>
+                    <div class="hata-mesaji">&#9888; <?= $hatalar['sifre'] ?></div>
                 <?php endif; ?>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="email">E-posta Adresi</label>
-            <input type="text" id="email" name="email" value="<?= $degerler['email'] ?>" class="<?= isset($hatalar['email']) ? 'hatali' : '' ?>" placeholder="ornek@mail.com">
-            <?php if (isset($hatalar['email'])): ?>
-                <div class="hata-mesaji">&#9888; <?= $hatalar['email'] ?></div>
-            <?php endif; ?>
-        </div>
+            <div class="form-group">
+                <label for="sifre_tekrar">Şifre Tekrar</label>
+                <input type="password" id="sifre_tekrar" name="sifre_tekrar"
+                    class="<?= isset($hatalar['sifre_tekrar']) ? 'hatali' : '' ?>" placeholder="••••••••">
+                <?php if (isset($hatalar['sifre_tekrar'])): ?>
+                    <div class="hata-mesaji">&#9888; <?= $hatalar['sifre_tekrar'] ?></div>
+                <?php endif; ?>
+            </div>
 
-        <div class="form-group">
-            <label for="sifre">Şifre</label>
-            <input type="password" id="sifre" name="sifre" class="<?= isset($hatalar['sifre']) ? 'hatali' : '' ?>" placeholder="••••••••">
-            <?php if (isset($hatalar['sifre'])): ?>
-                <div class="hata-mesaji">&#9888; <?= $hatalar['sifre'] ?></div>
-            <?php endif; ?>
-        </div>
-
-        <div class="form-group">
-            <label for="sifre_tekrar">Şifre Tekrar</label>
-            <input type="password" id="sifre_tekrar" name="sifre_tekrar" class="<?= isset($hatalar['sifre_tekrar']) ? 'hatali' : '' ?>" placeholder="••••••••">
-            <?php if (isset($hatalar['sifre_tekrar'])): ?>
-                <div class="hata-mesaji">&#9888; <?= $hatalar['sifre_tekrar'] ?></div>
-            <?php endif; ?>
-        </div>
-
-        <button type="submit">Hesabımı Oluştur</button>
-    </form>
-</div>
+            <button type="submit">Hesabımı Oluştur</button>
+        </form>
+    </div>
 
 </body>
+
 </html>
