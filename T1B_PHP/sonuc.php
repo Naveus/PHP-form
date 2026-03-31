@@ -1,218 +1,158 @@
 <?php
 session_start();
 
-
 if (empty($_SESSION['form_data'])) {
     header('Location: form.php');
     exit;
 }
 
-
-$isim     = $_SESSION['form_data']['isim'];
-$soyisim  = $_SESSION['form_data']['soyisim'];
-$okul_no  = $_SESSION['form_data']['okul_no'];
-$kampus   = $_SESSION['form_data']['kampus'];
-$kategori = $_SESSION['form_data']['kategori'];
-$talep    = $_SESSION['form_data']['talep'];
-
+$isim    = $_SESSION['form_data']['isim'];
+$soyisim = $_SESSION['form_data']['soyisim'];
+$email   = $_SESSION['form_data']['email'];
 
 unset($_SESSION['form_data']);
-
-$tarih = date('d.m.Y - H:i');
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talep Alındı – Bilecik Şeyh Edebali Üniversitesi</title>
+    <title>Kayıt Başarılı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #ececec;
             margin: 0;
             padding: 0;
-        }
-
-        .site-header {
-            background-color: #1a3a6b;
-            color: #ffffff;
-            padding: 14px 20px;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: center;
+            color: #fff;
         }
 
-        .site-header .logo-circle {
-            width: 52px;
-            height: 52px;
-            background-color: #ffffff;
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+            box-sizing: border-box;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(52, 211, 153, 0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
+            margin: 0 auto 20px;
+            color: #34d399;
+            font-size: 40px;
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+            animation: bounceIn 1s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        .site-header .header-text h2 {
-            font-size: 17px;
-            margin: 0;
-            font-weight: bold;
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .site-header .header-text p {
-            font-size: 12px;
-            margin: 2px 0 0;
-            opacity: 0.8;
+        h1 {
+            font-weight: 700;
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: #fff;
         }
 
-        .page-content {
-            max-width: 560px;
-            margin: 30px auto;
-            padding: 0 15px 40px;
+        p.message {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
 
-        .sayfa-yolu {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 14px;
+        .user-info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: left;
         }
 
-        .card {
-            background-color: #ffffff;
-            border: 1px solid #cccccc;
-            border-top: 3px solid #1a3a6b;
-            padding: 24px;
-        }
-
-        .card h1 {
-            font-size: 18px;
-            color: #1a3a6b;
-            margin: 0 0 4px;
-        }
-
-        .card .alt-baslik {
-            font-size: 13px;
-            color: #777;
-            margin: 0 0 20px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .basari-mesaj {
-            background-color: #e8f5e9;
-            border: 1px solid #a5d6a7;
-            color: #2e7d32;
-            padding: 8px 12px;
-            font-size: 13px;
-            margin-bottom: 18px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
             font-size: 14px;
         }
 
-        table th,
-        table td {
-            border: 1px solid #cccccc;
-            padding: 8px 10px;
-            text-align: left;
-            vertical-align: top;
+        .info-row:last-child {
+            margin-bottom: 0;
         }
 
-        table th {
-            background-color: #f0f4fa;
-            color: #1a3a6b;
-            width: 150px;
-            font-size: 13px;
+        .info-label {
+            color: #94a3b8;
         }
 
-        table td {
-            color: #444444;
-            word-break: break-word;
+        .info-value {
+            font-weight: 600;
+            color: #fff;
         }
 
-        .tarih {
-            font-size: 12px;
-            color: #999;
-            margin-top: 12px;
-        }
-
-        a.geri {
+        a.btn {
             display: inline-block;
-            margin-top: 16px;
-            font-size: 13px;
-            color: #1a3a6b;
             text-decoration: none;
+            width: calc(100% - 30px);
+            padding: 14px 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        a.geri:hover {
-            text-decoration: underline;
-        }
-
-        .site-footer {
-            text-align: center;
-            font-size: 11px;
-            color: #999;
-            padding: 16px;
-            border-top: 1px solid #ddd;
-            background-color: #f5f5f5;
+        a.btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
 
-<div class="site-header">
-    <div class="logo-circle">🏛️</div>
-    <div class="header-text">
-        <h2>Bilecik Şeyh Edebali Üniversitesi</h2>
-        <p>Öğrenci İşleri Daire Başkanlığı</p>
+<div class="container">
+    <div class="success-icon">&#10003;</div>
+    <h1>Hoş Geldin, <?= $isim ?>!</h1>
+    <p class="message">Hesabın başarıyla oluşturuldu. Artık tüm ayrıcalıklardan faydalanabilirsin.</p>
+
+    <div class="user-info">
+        <div class="info-row">
+            <span class="info-label">Ad Soyad:</span>
+            <span class="info-value"><?= $isim . ' ' . $soyisim ?></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">E-posta:</span>
+            <span class="info-value"><?= $email ?></span>
+        </div>
     </div>
-</div>
 
-<div class="page-content">
-    <div class="sayfa-yolu">Ana Sayfa &rsaquo; Öğrenci İşleri &rsaquo; Talep Formu &rsaquo; Sonuç</div>
-
-    <div class="card">
-        <h1>Talep Özeti</h1>
-        <p class="alt-baslik">Talebiniz sisteme kaydedilmiştir. Aşağıda girdiğiniz bilgiler yer almaktadır.</p>
-
-        <div class="basari-mesaj">&#10003; Talebiniz başarıyla alınmıştır.</div>
-
-        <table>
-            <tr>
-                <th>Ad Soyad</th>
-                <td><?= $isim . ' ' . $soyisim ?></td>
-            </tr>
-            <tr>
-                <th>Öğrenci Numarası</th>
-                <td><?= $okul_no ?></td>
-            </tr>
-            <tr>
-                <th>Kampüs</th>
-                <td><?= $kampus ?> Kampüsü</td>
-            </tr>
-            <tr>
-                <th>Talep Kategorisi</th>
-                <td><?= $kategori ?></td>
-            </tr>
-            <tr>
-                <th>Talep / Açıklama</th>
-                <td><?= nl2br($talep) ?></td>
-            </tr>
-        </table>
-
-        <p class="tarih">Gönderilme tarihi: <?= $tarih ?></p>
-
-        <a href="form.php" class="geri">&larr; Yeni talep oluştur</a>
-    </div>
-</div>
-
-<div class="site-footer">
-    &copy; <?= date('Y') ?> Bilecik Şeyh Edebali Üniversitesi &ndash; Öğrenci İşleri Daire Başkanlığı
+    <a href="form.php" class="btn">Geri Dön</a>
 </div>
 
 </body>

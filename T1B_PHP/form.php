@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Yardımcı fonksiyon: gelen veriyi temizle
 function temizle($veri) {
     return htmlspecialchars(strip_tags(trim($veri)), ENT_QUOTES, 'UTF-8');
 }
@@ -10,51 +9,43 @@ $hatalar  = [];
 $degerler = [
     'isim'     => '',
     'soyisim'  => '',
-    'okul_no'  => '',
-    'kampus'   => '',
-    'kategori' => '',
-    'talep'    => '',
+    'email'    => '',
 ];
 
-// Form gönderildiyse kontrol et
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Verileri al ve temizle
-    $degerler['isim']     = temizle($_POST['isim']     ?? '');
-    $degerler['soyisim']  = temizle($_POST['soyisim']  ?? '');
-    $degerler['okul_no']  = temizle($_POST['okul_no']  ?? '');
-    $degerler['kampus']   = temizle($_POST['kampus']   ?? '');
-    $degerler['kategori'] = temizle($_POST['kategori'] ?? '');
-    $degerler['talep']    = temizle($_POST['talep']    ?? '');
+    $degerler['isim']    = temizle($_POST['isim']    ?? '');
+    $degerler['soyisim'] = temizle($_POST['soyisim'] ?? '');
+    $degerler['email']   = temizle($_POST['email']   ?? '');
+    $sifre               = $_POST['sifre'] ?? '';
+    $sifre_tekrar        = $_POST['sifre_tekrar'] ?? '';
 
-    // Doğrulama
     if ($degerler['isim'] === '') {
-        $hatalar['isim'] = 'Ad alanı zorunludur.';
+        $hatalar['isim'] = 'İsim alanı zorunludur.';
     }
 
     if ($degerler['soyisim'] === '') {
-        $hatalar['soyisim'] = 'Soyad alanı zorunludur.';
+        $hatalar['soyisim'] = 'Soyisim alanı zorunludur.';
     }
 
-    if ($degerler['okul_no'] === '') {
-        $hatalar['okul_no'] = 'Öğrenci numarası zorunludur.';
-    } elseif (!ctype_digit($degerler['okul_no'])) {
-        $hatalar['okul_no'] = 'Öğrenci numarası yalnızca rakamlardan oluşmalıdır.';
+    if ($degerler['email'] === '') {
+        $hatalar['email'] = 'E-posta alanı zorunludur.';
+    } elseif (!filter_var($degerler['email'], FILTER_VALIDATE_EMAIL)) {
+        $hatalar['email'] = 'Geçerli bir e-posta adresi giriniz.';
     }
 
-    if ($degerler['kampus'] === '') {
-        $hatalar['kampus'] = 'Lütfen bir kampüs seçiniz.';
+    if ($sifre === '') {
+        $hatalar['sifre'] = 'Şifre alanı zorunludur.';
+    } elseif (strlen($sifre) < 6) {
+        $hatalar['sifre'] = 'Şifre en az 6 karakter olmalıdır.';
     }
 
-    if ($degerler['kategori'] === '') {
-        $hatalar['kategori'] = 'Lütfen bir kategori seçiniz.';
+    if ($sifre_tekrar === '') {
+        $hatalar['sifre_tekrar'] = 'Şifre tekrar alanı zorunludur.';
+    } elseif ($sifre !== $sifre_tekrar) {
+        $hatalar['sifre_tekrar'] = 'Şifreler birbiriyle eşleşmiyor.';
     }
 
-    if ($degerler['talep'] === '') {
-        $hatalar['talep'] = 'Talep alanı zorunludur.';
-    }
-
-    // Hata yoksa sonuç sayfasına yönlendir
     if (empty($hatalar)) {
         $_SESSION['form_data'] = $degerler;
         header('Location: sonuc.php');
@@ -67,292 +58,189 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Öğrenci Talep Formu – Bilecik Şeyh Edebali Üniversitesi</title>
+    <title>Premium Üyelik Kaydı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #ececec;
             margin: 0;
             padding: 0;
-        }
-
-        .site-header {
-            background-color: #1a3a6b;
-            color: #ffffff;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .site-header .logo-circle {
-            width: 52px;
-            height: 52px;
-            background-color: #ffffff;
-            border-radius: 50%;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
+            color: #fff;
         }
 
-        .site-header .header-text h2 {
-            font-size: 17px;
-            margin: 0;
-            font-weight: bold;
-        }
-
-        .site-header .header-text p {
-            font-size: 12px;
-            margin: 2px 0 0;
-            opacity: 0.8;
-        }
-
-        .page-content {
-            max-width: 560px;
-            margin: 30px auto;
-            padding: 0 15px 40px;
-        }
-
-        .sayfa-yolu {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 14px;
-        }
-
-        .card {
-            background-color: #ffffff;
-            border: 1px solid #cccccc;
-            border-top: 3px solid #1a3a6b;
-            padding: 24px;
-        }
-
-        .card h1 {
-            font-size: 18px;
-            color: #1a3a6b;
-            margin: 0 0 4px;
-        }
-
-        .card .alt-baslik {
-            font-size: 13px;
-            color: #777;
-            margin: 0 0 20px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #333;
-        }
-
-        input[type="text"],
-        textarea,
-        select {
+        .container {
             width: 100%;
-            padding: 7px 9px;
-            font-size: 14px;
-            border: 1px solid #aaaaaa;
+            max-width: 450px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
         }
 
-        input[type="text"].hatali,
-        textarea.hatali,
-        select.hatali {
-            border-color: #cc0000;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 30px;
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 20px;
         }
 
         .form-row {
             display: flex;
-            gap: 12px;
+            gap: 15px;
         }
 
         .form-row .form-group {
             flex: 1;
         }
 
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #38bdf8;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
+
+        input.hatali {
+            border-color: #ef4444;
+        }
+
+        input.hatali:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+
         .hata-mesaji {
-            color: #cc0000;
+            color: #f87171;
             font-size: 12px;
-            margin-top: 3px;
-        }
-
-   
-        .radio-grup {
-            display: flex;
-            gap: 20px;
-            margin-top: 4px;
-        }
-
-        .radio-grup label {
+            margin-top: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-weight: normal;
-            cursor: pointer;
+            gap: 5px;
         }
 
-        .radio-grup input[type="radio"] {
-            width: auto;
-            margin: 0;
-            cursor: pointer;
-        }
-
-        textarea {
-            height: 110px;
-            resize: vertical;
-        }
-
-        .btn-submit {
-            background-color: #1a3a6b;
-            color: #ffffff;
+        button {
+            width: 100%;
+            padding: 14px;
             border: none;
-            padding: 9px 24px;
-            font-size: 14px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #38bdf8, #6366f1);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            font-family: Arial, sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
         }
 
-        .btn-submit:hover {
-            background-color: #14305a;
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
         }
 
-        .site-footer {
-            text-align: center;
-            font-size: 11px;
-            color: #999;
-            padding: 16px;
-            border-top: 1px solid #ddd;
-            background-color: #f5f5f5;
+        button:active {
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
 
-<div class="site-header">
-    <div class="logo-circle">🏛️</div>
-    <div class="header-text">
-        <h2>Bilecik Şeyh Edebali Üniversitesi</h2>
-        <p>Öğrenci İşleri Daire Başkanlığı</p>
-    </div>
-</div>
+<div class="container">
+    <h1>Kayıt Ol</h1>
+    <p class="subtitle">Premium dünyaya adım atmak için hesabını oluştur.</p>
 
-<div class="page-content">
-    <div class="sayfa-yolu">Ana Sayfa &rsaquo; Öğrenci İşleri &rsaquo; Talep Formu</div>
-
-    <div class="card">
-        <h1>&#128203; Öğrenci Talep Formu</h1>
-        <p class="alt-baslik">Lütfen aşağıdaki bilgileri eksiksiz ve doğru şekilde doldurunuz.</p>
-
-        <form action="form.php" method="POST">
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="isim">Ad <span style="color:red">*</span></label>
-                    <input
-                        type="text"
-                        id="isim"
-                        name="isim"
-                        value="<?= $degerler['isim'] ?>"
-                        class="<?= isset($hatalar['isim']) ? 'hatali' : '' ?>"
-                    >
-                    <?php if (isset($hatalar['isim'])): ?>
-                        <div class="hata-mesaji"><?= $hatalar['isim'] ?></div>
-                    <?php endif; ?>
-                </div>
-
-                <div class="form-group">
-                    <label for="soyisim">Soyad <span style="color:red">*</span></label>
-                    <input
-                        type="text"
-                        id="soyisim"
-                        name="soyisim"
-                        value="<?= $degerler['soyisim'] ?>"
-                        class="<?= isset($hatalar['soyisim']) ? 'hatali' : '' ?>"
-                    >
-                    <?php if (isset($hatalar['soyisim'])): ?>
-                        <div class="hata-mesaji"><?= $hatalar['soyisim'] ?></div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
+    <form action="form.php" method="POST">
+        <div class="form-row">
             <div class="form-group">
-                <label for="okul_no">Öğrenci Numarası <span style="color:red">*</span></label>
-                <input
-                    type="text"
-                    id="okul_no"
-                    name="okul_no"
-                    value="<?= $degerler['okul_no'] ?>"
-                    class="<?= isset($hatalar['okul_no']) ? 'hatali' : '' ?>"
-                >
-                <?php if (isset($hatalar['okul_no'])): ?>
-                    <div class="hata-mesaji"><?= $hatalar['okul_no'] ?></div>
+                <label for="isim">Ad</label>
+                <input type="text" id="isim" name="isim" value="<?= $degerler['isim'] ?>" class="<?= isset($hatalar['isim']) ? 'hatali' : '' ?>" placeholder="Adınız">
+                <?php if (isset($hatalar['isim'])): ?>
+                    <div class="hata-mesaji">&#9888; <?= $hatalar['isim'] ?></div>
                 <?php endif; ?>
             </div>
 
             <div class="form-group">
-                <label>Kampüs <span style="color:red">*</span></label>
-                <div class="radio-grup">
-                    <label>
-                        <input type="radio" name="kampus" value="Merkez"
-                            <?= $degerler['kampus'] === 'Merkez' ? 'checked' : '' ?>> Merkez
-                    </label>
-                    <label>
-                        <input type="radio" name="kampus" value="Söğüt"
-                            <?= $degerler['kampus'] === 'Söğüt' ? 'checked' : '' ?>> Söğüt
-                    </label>
-                    <label>
-                        <input type="radio" name="kampus" value="Pazaryeri"
-                            <?= $degerler['kampus'] === 'Pazaryeri' ? 'checked' : '' ?>> Pazaryeri
-                    </label>
-                </div>
-                <?php if (isset($hatalar['kampus'])): ?>
-                    <div class="hata-mesaji"><?= $hatalar['kampus'] ?></div>
+                <label for="soyisim">Soyad</label>
+                <input type="text" id="soyisim" name="soyisim" value="<?= $degerler['soyisim'] ?>" class="<?= isset($hatalar['soyisim']) ? 'hatali' : '' ?>" placeholder="Soyadınız">
+                <?php if (isset($hatalar['soyisim'])): ?>
+                    <div class="hata-mesaji">&#9888; <?= $hatalar['soyisim'] ?></div>
                 <?php endif; ?>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="kategori">Talep Kategorisi <span style="color:red">*</span></label>
-                <select id="kategori" name="kategori" class="<?= isset($hatalar['kategori']) ? 'hatali' : '' ?>">
-                    <option value="">-- Kategori Seçiniz --</option>
-                    <option value="Ders"     <?= $degerler['kategori'] === 'Ders'     ? 'selected' : '' ?>>Ders</option>
-                    <option value="Tavsiye"  <?= $degerler['kategori'] === 'Tavsiye'  ? 'selected' : '' ?>>Tavsiye</option>
-                </select>
-                <?php if (isset($hatalar['kategori'])): ?>
-                    <div class="hata-mesaji"><?= $hatalar['kategori'] ?></div>
-                <?php endif; ?>
-            </div>
+        <div class="form-group">
+            <label for="email">E-posta Adresi</label>
+            <input type="text" id="email" name="email" value="<?= $degerler['email'] ?>" class="<?= isset($hatalar['email']) ? 'hatali' : '' ?>" placeholder="ornek@mail.com">
+            <?php if (isset($hatalar['email'])): ?>
+                <div class="hata-mesaji">&#9888; <?= $hatalar['email'] ?></div>
+            <?php endif; ?>
+        </div>
 
-            <div class="form-group">
-                <label for="talep">Talep / Açıklama <span style="color:red">*</span></label>
-                <textarea
-                    id="talep"
-                    name="talep"
-                    class="<?= isset($hatalar['talep']) ? 'hatali' : '' ?>"
-                ><?= $degerler['talep'] ?></textarea>
-                <?php if (isset($hatalar['talep'])): ?>
-                    <div class="hata-mesaji"><?= $hatalar['talep'] ?></div>
-                <?php endif; ?>
-            </div>
+        <div class="form-group">
+            <label for="sifre">Şifre</label>
+            <input type="password" id="sifre" name="sifre" class="<?= isset($hatalar['sifre']) ? 'hatali' : '' ?>" placeholder="••••••••">
+            <?php if (isset($hatalar['sifre'])): ?>
+                <div class="hata-mesaji">&#9888; <?= $hatalar['sifre'] ?></div>
+            <?php endif; ?>
+        </div>
 
-            <button type="submit" class="btn-submit">Formu Gönder</button>
+        <div class="form-group">
+            <label for="sifre_tekrar">Şifre Tekrar</label>
+            <input type="password" id="sifre_tekrar" name="sifre_tekrar" class="<?= isset($hatalar['sifre_tekrar']) ? 'hatali' : '' ?>" placeholder="••••••••">
+            <?php if (isset($hatalar['sifre_tekrar'])): ?>
+                <div class="hata-mesaji">&#9888; <?= $hatalar['sifre_tekrar'] ?></div>
+            <?php endif; ?>
+        </div>
 
-        </form>
-    </div>
-</div>
-
-<div class="site-footer">
-    &copy; <?= date('Y') ?> Bilecik Şeyh Edebali Üniversitesi &ndash; Öğrenci İşleri Daire Başkanlığı
+        <button type="submit">Hesabımı Oluştur</button>
+    </form>
 </div>
 
 </body>
